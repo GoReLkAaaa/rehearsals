@@ -1,0 +1,34 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.sqlite3
+*.db
+*.pkl
+
+# Environment variables
+.env
+
+# Static files
+/static/
+media/
+
+# Virtual environment
+venv/
+ENV/
+env/
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Migrations (опционально)
+*/migrations/__pycache__/
+*/migrations/*.pyc
