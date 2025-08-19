@@ -1,8 +1,10 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
-
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 
 flag_russia = '\U0001F1F7\U0001F1FA'
 flag_uzbekistan = '\U0001F1FA\U0001F1FF'
+
+
+WEB_APP_URL = ''
 
 
 def text_main_menu():
@@ -41,58 +43,25 @@ def text_user_profile():
 
 def text_rehearsals_menu():
 
-    text_rehearsals = 'Выберите нужную категорию ниже'
+    text_rehearsals = 'Открыть каталог рецептов 👇'
 
     keyboard_rehearsals = ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text='🥣 Первые блюда')],
-            [KeyboardButton(text='🍲 Вторые блюда')],
-            [KeyboardButton(text='🍰 Десерты')],
-            [KeyboardButton(text='🍹 Напитки')],
-            [KeyboardButton(text='🔙 Назад')]
+            [KeyboardButton(text='🍽️ Каталог', web_app=WebAppInfo(url=WEB_APP_URL))]
         ]
     )
 
     return text_rehearsals, keyboard_rehearsals
 
 
-def product_keyboard(product_id):
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="➕ В корзину", callback_data=f"addcart_{product_id}")]
-        ]
-    )
+def text_basket_menu():
 
-
-def next_page_keyboard(category, page, total):
-    if (page + 1) * 3 < total:
-        return InlineKeyboardMarkup(
-            inline_keyboard=[
-                [InlineKeyboardButton(text="➡ Далее", callback_data=f"next_{category}_{page+1}")]
-            ]
-        )
-    return None
-
-
-def remove_button(product_id):
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="❌ Удалить", callback_data=f"delcart_{product_id}")]
-        ]
-    )
-
-
-def text_basket_menu(price):
-
-    text_basket = (f'Ваша корзина\n'
-                   f'Ее цена {price} сумм')
+    text_basket = 'Открыть вашу корзину 👇'
 
     keyboard_basket = ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text='💵 Оплатить')],
-            [KeyboardButton(text='🔙 Назад')],
-        ],
-        resize_keyboard=True,
+            [KeyboardButton(text='🧺 Корзина', web_app=WebAppInfo(url=WEB_APP_URL))],
+        ]
     )
 
     return text_basket, keyboard_basket

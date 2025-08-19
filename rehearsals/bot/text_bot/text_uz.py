@@ -1,14 +1,16 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
-
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 
 flag_russia = '\U0001F1F7\U0001F1FA'
 flag_uzbekistan = '\U0001F1FA\U0001F1FF'
 
 
+WEB_APP_URL = ''
+
+
 def text_main_menu_uz():
 
-    text_main = ('👋 Salom! Eksklyuziv retseptlar bilan botga xush kelibsiz.\n\n'
-                 '🍽️ Bu yerda siz ishonchli, mazali va original taom retseptlarini topasiz — nonushtalardan tortib desertlargacha. Har bir retseptni bot orqali sotib olishingiz mumkin.')
+    text_main = ('👋 Salom! Eksklyuziv retseptlar botiга xush kelibsiz.\n\n'
+                '🍽️ Bu yerda siz ishonchli, mazali va noodatiy taom retseptlarini topasiz — nonushtalardan tortib desertlargacha. Har bir retseptni bot orqali xarid qilish mumkin.')
 
     keyboard_main = ReplyKeyboardMarkup(
         keyboard=[
@@ -25,7 +27,7 @@ def text_main_menu_uz():
 
 def text_user_profile():
 
-    text_profile = '👋 Shaxsiy kabinetingizga xush kelibsiz, bu yerda siz xaridlar tarixini va toʻlov kvitansiyalarini olishingiz mumkin'
+    text_profile = '👋 Shaxsiy kabinetга xush kelibsiz, bu yerda siz xaridlar tarixingizni va toʻlov kvitansiyalarini olishingiz mumkin'
 
     keyboard_profile = ReplyKeyboardMarkup(
         keyboard=[
@@ -41,62 +43,28 @@ def text_user_profile():
 
 def text_rehearsals_menu():
 
-    text_rehearsals = 'Quyidagi kerakli toifani tanlang'
+    text_rehearsals = 'Retseptlar katalogini oching 👇'
 
     keyboard_rehearsals = ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text='🥣 Birinchi taomlar')],
-            [KeyboardButton(text='🍲 Ikkinchi taomlar')],
-            [KeyboardButton(text='🍰 Desertlar')],
-            [KeyboardButton(text='🍹 Ichimliklar')],
-            [KeyboardButton(text='🔙 Orqaga')]
+            [KeyboardButton(text='🍽️ Katalog', web_app=WebAppInfo(url=WEB_APP_URL))]
         ]
     )
 
     return text_rehearsals, keyboard_rehearsals
 
 
-def product_keyboard(product_id):
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="➕ Savatga qoʻshish", callback_data=f"addcart_{product_id}")]
-        ]
-    )
+def text_basket_menu():
 
-
-def next_page_keyboard(category, page, total):
-    if (page + 1) * 3 < total:
-        return InlineKeyboardMarkup(
-            inline_keyboard=[
-                [InlineKeyboardButton(text="➡ Keyingi", callback_data=f"next_{category}_{page+1}")]
-            ]
-        )
-    return None
-
-
-def remove_button(product_id):
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="❌ Oʻchirish", callback_data=f"delcart_{product_id}")]
-        ]
-    )
-
-
-def text_basket_menu(price):
-
-    text_basket = (f'Savatingiz\n'
-                   f'Narxi: {price} soʻm')
+    text_basket = 'Sizning savatingizni oching 👇'
 
     keyboard_basket = ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text='💵 Toʻlash')],
-            [KeyboardButton(text='🔙 Orqaga')],
-        ],
-        resize_keyboard=True,
+            [KeyboardButton(text='🧺 Savat', web_app=WebAppInfo(url=WEB_APP_URL))],
+        ]
     )
 
     return text_basket, keyboard_basket
-
 
 
 def text_settings_menu_uz(lang):

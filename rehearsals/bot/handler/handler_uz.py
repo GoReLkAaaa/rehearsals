@@ -1,33 +1,31 @@
 import os
 
+
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from aiogram import Router
 from aiogram.filters import Command
 
+
 from dotenv import load_dotenv
 load_dotenv()
+
 
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rehearsals.settings')
 django.setup()
 
+
 from bot.sync_def.logic_handler_models_func import (get_or_create_new_user,
-                                                    get_product,
-                                                    get_basket_items,
-                                                    add_to_cart,
-                                                    remove_from_cart,
                                                     get_language_user,
                                                     set_lang,
-                                                    get_products_by_category,
-                                                    get_products_count
                                                     )
 from bot.text_bot.text_uz import (
-                                                        text_main_menu_uz,
-                                                        text_user_profile,
-                                                        text_rehearsals_menu,
-                                                        text_basket_menu,
-                                                        text_settings_menu_uz,
+                                                    text_main_menu_uz,
+                                                    text_user_profile,
+                                                    text_rehearsals_menu,
+                                                    text_basket_menu,
+                                                    text_settings_menu_uz,
                                                     )
 from bot.text_bot.text_ru import text_main_menu
 from bot.state.state_bot import MainMenu
@@ -51,6 +49,7 @@ def rehearsals_uz_logic_handler(router: Router):
         )
         await state.set_state(MainMenu.MAIN_WINDOW)
 
+
     @router.message(lambda message: message.text == '👤 Shaxsiy kabinet')
     async def personal_account_handler(message: Message, state: FSMContext):
 
@@ -63,30 +62,36 @@ def rehearsals_uz_logic_handler(router: Router):
             reply_markup=text_user_profile()[1]
         )
 
-    @router.message(lambda message: message.text == '🍽️ Retseptlar')
-    async def rehearsals_menu(message: Message, state: FSMContext):
 
+    @router.message(lambda message: message.text == '📜 Xaridlar tarixi')
+    async def history_buy_handler(message: Message):
+        await message.answer(
+            "Tarix bo'sh"
+        )
+
+
+    @router.message(lambda message: message.text == '💳 Toʻlov kvitansiyalari')
+    async def payment_receipts(message: Message):
+        await message.answer(
+            "Sizda hech qanday to'lov kvitansiyasi yo'q"
+        )
+
+
+    @router.message(lambda message: message.text == '🍽️ Retseptlar')
+    async def rehearsals_menu(message: Message):
         await message.answer(
             text_rehearsals_menu()[0],
             reply_markup=text_rehearsals_menu()[1]
         )
 
-        await state.set_state(MainMenu.REHEARSALS)
 
     @router.message(lambda message: message.text == '🧺 Savat')
-    async def basket_menu(message: Message, state: FSMContext):
-        await state.set_state(MainMenu.BASKET)
+    async def basket_menu(message: Message):
+        await message.answer(
+            text_basket_menu()[0],
+            reply_markup=text_basket_menu()[1]
+        )
 
-        basket = await get_basket_items(message.from_user.id)
-        if not basket:
-            await message.answer(
-                'Savat bo‘sh'
-            )
-        else:
-            await message.answer(
-                f'{basket}{text_basket_menu()[0]}',
-                reply_markup=text_basket_menu()[1]
-            )
 
     @router.message(lambda message: message.text == '⚙️ Sozlamalar')
     async def settings_menu(message: Message, state: FSMContext):
