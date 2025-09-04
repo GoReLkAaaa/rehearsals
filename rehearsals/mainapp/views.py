@@ -1,3 +1,4 @@
+from Scripts.bottle import request
 from rest_framework import viewsets, permissions
 from .models import Product, UserProfile, Purchase, CartItem
 from .serializers import ProductSerializer, UserProfileSerializer, PurchaseSerializer, CartItemSerializer
@@ -36,6 +37,13 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         return self.serializer_action_class.get(self.action, UserProfileSerializer)
 
 
+    def get_queryset(self):
+        telegram_id = self.request.query_params.get('telegram_id')
+        if telegram_id:
+            return UserProfile.objects.filter(telegram_id=telegram_id)
+        return super().get_queryset()
+
+
 @extend_schema_view(tags=['Purchase'])
 class PurchaseViewSet(viewsets.ModelViewSet):
     queryset = Purchase.objects.all()
@@ -66,3 +74,18 @@ class CartItemViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         return self.serializer_action_class.get(self.action, CartItemSerializer)
+
+
+    def get_queryset(self):
+        telegram_id = self.request.query_params.get('telegram_id')
+        if telegram_id:
+            try:
+                profile = UserProfile.objects.get(telegram_id=telegram_id)
+                return CartItem.objects.filter(user=profile)
+            except UserProfile.DoesNotExist:
+                return CartItem.objects.none()
+        return CartItem.objects.all()
+
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user.profile)
