@@ -1,5 +1,37 @@
 from rest_framework import serializers
 from .models import Product, UserProfile, Purchase, CartItem
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
+class TelegramTokenObtainPairSerializer(serializers.Serializer):
+    telegram_id = serializers.IntegerField()
+
+
+    username = None
+    password = None
+
+    def validate(self, attrs):
+        telegram_id = attrs.get("telegram_id")
+
+
+        try:
+            user_profile = UserProfile.objects.get(telegram_id=telegram_id)
+            user = user_profile.user
+        except UserProfile.DoesNotExist:
+            raise serializers.ValidationError("User with this telegram_id not found")
+
+        if not user.is_active:
+            raise serializers.ValidationError("User is inactive")
+
+
+        refresh = RefreshToken.for_user(user)
+
+        data = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
+
+        return data
 
 
 class ProductSerializer(serializers.ModelSerializer):

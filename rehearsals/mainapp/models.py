@@ -101,6 +101,7 @@ class UserProfile(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='profile',
+        null=True,
     )
     telegram_id = models.BigIntegerField(
         unique=True,
