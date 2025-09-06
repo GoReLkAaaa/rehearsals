@@ -1,5 +1,5 @@
-from django.contrib.auth.models import User
 from django.db import models
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 # Create your models here.
 
@@ -96,13 +96,30 @@ class Product(models.Model):
         verbose_name_plural = 'Блюда'
 
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name='profile',
-        null=True,
-    )
+class UserProfileManager(BaseUserManager):
+    def create_user(self, telegram_id, password=None, **extra_fields):
+        if not telegram_id:
+            raise ValueError("У пользователя должен быть telegram_id")
+
+        user = self.model(telegram_id=telegram_id, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, telegram_id, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Суперпользователь должен иметь is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Суперпользователь должен иметь is_superuser=True.")
+
+        return self.create_user(telegram_id, password, **extra_fields)
+
+
+class UserProfile(AbstractUser):
+    username = None
     telegram_id = models.BigIntegerField(
         unique=True,
         verbose_name='Telegram ID пользователя'
@@ -117,6 +134,10 @@ class UserProfile(models.Model):
         verbose_name='Выбранный язык'
     )
 
+    USERNAME_FIELD = 'telegram_id'
+    REQUIRED_FIELDS = []
+
+    objects = UserProfileManager()
 
     def __str__(self):
         return str(self.telegram_id)

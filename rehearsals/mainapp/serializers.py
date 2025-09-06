@@ -4,34 +4,24 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class TelegramTokenObtainPairSerializer(serializers.Serializer):
-    telegram_id = serializers.IntegerField()
-
-
-    username = None
-    password = None
+    telegram_id = serializers.IntegerField(write_only=True)
+    access = serializers.CharField(read_only=True)
+    refresh = serializers.CharField(read_only=True)
 
     def validate(self, attrs):
         telegram_id = attrs.get("telegram_id")
 
-
         try:
-            user_profile = UserProfile.objects.get(telegram_id=telegram_id)
-            user = user_profile.user
+            user = UserProfile.objects.get(telegram_id=telegram_id)
         except UserProfile.DoesNotExist:
-            raise serializers.ValidationError("User with this telegram_id not found")
-
-        if not user.is_active:
-            raise serializers.ValidationError("User is inactive")
-
+            raise serializers.ValidationError("Пользователь с таким Telegram ID не найден")
 
         refresh = RefreshToken.for_user(user)
 
-        data = {
+        return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
         }
-
-        return data
 
 
 class ProductSerializer(serializers.ModelSerializer):

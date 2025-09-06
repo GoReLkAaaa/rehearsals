@@ -4,7 +4,7 @@ flag_russia = '\U0001F1F7\U0001F1FA'
 flag_uzbekistan = '\U0001F1FA\U0001F1FF'
 
 
-WEB_APP_URL = ''
+WEB_APP_URL = 'https://bot.nextgen.uz/'
 
 
 def text_main_menu():
@@ -41,26 +41,26 @@ def text_user_profile():
     return text_profile, keyboard_profile
 
 
-def text_rehearsals_menu():
+def text_rehearsals_menu(tg_id):
 
     text_rehearsals = 'Открыть каталог рецептов 👇'
 
     keyboard_rehearsals = ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text='🍽️ Каталог', web_app=WebAppInfo(url=WEB_APP_URL))]
+            [KeyboardButton(text='🍽️ Каталог', web_app=WebAppInfo(url=f'{WEB_APP_URL}/{tg_id}'))],
         ]
     )
 
     return text_rehearsals, keyboard_rehearsals
 
 
-def text_basket_menu():
+def text_basket_menu(tg_id):
 
     text_basket = 'Открыть вашу корзину 👇'
 
     keyboard_basket = ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text='🧺 Корзина', web_app=WebAppInfo(url=WEB_APP_URL))],
+            [KeyboardButton(text='🧺 Корзина', web_app=WebAppInfo(url=f'{WEB_APP_URL}/{tg_id}'))],
         ]
     )
 

@@ -82,17 +82,23 @@ def rehearsals_ru_logic_handler(router: Router):
 
     @router.message(lambda message: message.text == '🍽️ Рецепты')
     async def rehearsals_menu(message: Message):
+
+        telegram_id = message.from_user.id
+
         await message.answer(
-            text_rehearsals_menu()[0],
-            reply_markup=text_rehearsals_menu()[1]
+            text_rehearsals_menu(telegram_id)[0],
+            reply_markup=text_rehearsals_menu(telegram_id)[1]
         )
 
 
     @router.message(lambda message: message.text == '🧺 Корзина')
     async def basket_menu(message: Message):
+
+        telegram_id = message.from_user.id
+
         await message.answer(
-            text_basket_menu()[0],
-            reply_markup=text_basket_menu()[1]
+            text_basket_menu(telegram_id)[0],
+            reply_markup=text_basket_menu(telegram_id)[1]
         )
 
 

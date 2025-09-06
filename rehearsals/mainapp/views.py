@@ -1,9 +1,10 @@
 from rest_framework import viewsets, permissions
-from .models import Product, UserProfile, Purchase, CartItem
-from .serializers import ProductSerializer, UserProfileSerializer, PurchaseSerializer, CartItemSerializer
 from drf_spectacular.utils import extend_schema_view
 from rest_framework_simplejwt.views import TokenObtainPairView
+
 from .serializers import TelegramTokenObtainPairSerializer
+from .models import Product, UserProfile, Purchase, CartItem
+from .serializers import ProductSerializer, UserProfileSerializer, PurchaseSerializer, CartItemSerializer
 
 
 class TelegramTokenObtainPairView(TokenObtainPairView):
