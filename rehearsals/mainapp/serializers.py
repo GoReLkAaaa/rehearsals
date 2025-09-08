@@ -87,3 +87,44 @@ class CartItemSerializer(serializers.ModelSerializer):
             'product_id'
         ]
         read_only_fields = ['user']
+
+
+class CartItemCreateSerializer(serializers.ModelSerializer):
+
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+        source='product',
+        write_only=True,
+    )
+
+    telegram_id = serializers.IntegerField(write_only=True)
+    product = ProductSerializer(read_only=True)
+
+
+    class Meta:
+        model = CartItem
+        fields = ['id', 'product', 'product_id', 'telegram_id']
+
+
+    def validate(self, attrs):
+        tg_id = attrs.get('telegram_id')
+
+        try:
+            user = UserProfile.objects.get(telegram_id=tg_id)
+
+        except UserProfile.DoesNotExist:
+            raise serializers.ValidationError({'telegram_id': 'Пользователь с таким Telegram ID не найден'})
+
+        attrs['user'] = user
+
+        return attrs
+
+
+    def create(self, validated_data):
+        validated_data.pop('telegram_id', None)
+        user = validated_data['user']
+        product = validated_data['product']
+
+        obj, created = CartItem.objects.get_or_create(user=user, product=product)
+
+        return obj

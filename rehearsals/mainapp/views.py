@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers import TelegramTokenObtainPairSerializer
 from .models import Product, UserProfile, Purchase, CartItem
-from .serializers import ProductSerializer, UserProfileSerializer, PurchaseSerializer, CartItemSerializer
+from .serializers import ProductSerializer, UserProfileSerializer, PurchaseSerializer, CartItemSerializer, CartItemCreateSerializer
 
 
 class TelegramTokenObtainPairView(TokenObtainPairView):
@@ -17,8 +17,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_action_class = {
         'list': ProductSerializer,
         'retrieve': ProductSerializer,
-        'create': ProductSerializer,
-        'destroy': ProductSerializer,
     }
     permission_classes = [permissions.IsAuthenticated]
 
@@ -61,13 +59,14 @@ class PurchaseViewSet(viewsets.ModelViewSet):
 
 @extend_schema_view(tags=['CartItem'])
 class CartItemViewSet(viewsets.ModelViewSet):
-    queryset = CartItem.objects.all()
+    queryset = CartItem.objects.select_related('user', 'product').all()
     serializer_action_class = {
         'list': CartItemSerializer,
         'retrieve': CartItemSerializer,
         'create': CartItemSerializer,
         'destroy': CartItemSerializer,
     }
+
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -75,5 +74,13 @@ class CartItemViewSet(viewsets.ModelViewSet):
         return self.serializer_action_class.get(self.action, CartItemSerializer)
 
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user.profile)
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CartItemCreateSerializer
+        return CartItemSerializer
+
+    def get_queryset(self):
+        tg_id = self.request.query_params.get('telegram_id')
+        if tg_id:
+            return self.queryset.filter(user__telegram_id=tg_id)
+        return self.queryset
