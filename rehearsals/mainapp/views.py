@@ -76,10 +76,11 @@ class CartItemViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         tg_id = self.request.query_params.get('telegram_id')
+        qs = CartItem.objects.select_related('user', 'product')
         if tg_id:
             try:
                 tg_id = int(tg_id)
+                qs = qs.filter(user__telegram_id=tg_id)
             except ValueError:
-                return CartItem.objects.none()
-            return self.queryset.filter(user__telegram_id=tg_id)
-        return self.queryset
+                qs = qs.none()
+        return qs
