@@ -63,7 +63,7 @@ class CartItemViewSet(viewsets.ModelViewSet):
     serializer_action_class = {
         'list': CartItemSerializer,
         'retrieve': CartItemSerializer,
-        'create': CartItemSerializer,
+        'create': CartItemCreateSerializer,
         'destroy': CartItemSerializer,
     }
 
@@ -74,13 +74,12 @@ class CartItemViewSet(viewsets.ModelViewSet):
         return self.serializer_action_class.get(self.action, CartItemSerializer)
 
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return CartItemCreateSerializer
-        return CartItemSerializer
-
     def get_queryset(self):
         tg_id = self.request.query_params.get('telegram_id')
         if tg_id:
+            try:
+                tg_id = int(tg_id)
+            except ValueError:
+                return CartItem.objects.none()
             return self.queryset.filter(user__telegram_id=tg_id)
         return self.queryset
